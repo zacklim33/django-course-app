@@ -35,21 +35,47 @@
     </div>
 </nav>
 
+
 <div class="container-fluid">
-    {% if grade > 80 %}
+    
+    {% if avgGrade >= 70 %}    
     <div class="alert alert-success">
        <!--HINT Display passed info -->
+       <b> Congrats. {{user.first_name}}. You had passed with a score of {{grade}}/ {{ question_count }}</b>
     </div>
         {% else %}
         <div class="alert alert-danger">
+            <b> Dear {{user.first_name}}, you didn't passed. Your score was {{grade}}/{{ question_count }}. </b>
             <!--HINT Display failed info -->
         </div>
-        <a class="btn btn-link text-danger" href="{% url 'onlinecourse:course_details' course.id %}">Re-test</a>
+        <a class="btn btn-block text-danger" href="{% url 'onlinecourse:course_details' course.id %}">Re-test {{avgGrade}}</a>
         {% endif %}
         <div class="card-columns-vertical mt-1">
         <h5 class="">Exam results</h5>
             <!--HINT Display exam results-->
-        </div>
+
+            {% for question in course.question_set.all %}
+<div class="card mt-1">
+    <div class="card-header"><h5>{{question.question_text}}</h5></div>
+    <div class="form-group">
+        
+            <div class="form-check">            
+            {% for choice in question.choice_set.all %}
+                {% if choice.is_correct and choice in choices %}
+                    <div class="text-success">Correct answer: {{choice.choice_text}}</div>
+                {% elif choice.is_correct and not choice in choices %}
+                    <div class="text-warning">Not selected: {{choice.choice_text}}</div>
+                {% elif not choice.is_correct and choice in choices %}
+                    <div class="text-danger">Wrong answer: {{choice.choice_text}} </div>
+                {% else %}
+                    <div> {{choice.choice_text}}  </div>
+                {% endif %}
+                
+            {% endfor %}
     </div>
+     </div>
+        {% endfor %} 
+    </div>
+</div>
 </body>
 </html>
